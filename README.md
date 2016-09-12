@@ -7,7 +7,7 @@ First of all, you'll need to install [Node.js](https://nodejs.org/en/) as well a
 Next, you'll need to clone this repository onto your local machine:
 
 ```
-git clone git@github.com:lfittl/graphql-workshop.git -b step-1
+git clone https://github.com/lfittl/graphql-workshop.git -b step-1
 ```
 
 In the `graphql-workshop` directory, run the following:
