@@ -1,16 +1,33 @@
-## GraphQL + PostgreSQL workshop
+## Step 1
 
-This repository contains the workshop on GraphQL and PostgreSQL, first given at Strange Loop 2016.
+In this step we'll setup our environment so we can follow the rest of the workshop.
 
-### Steps
+First of all, you'll need to install [Node.js](https://nodejs.org/en/) as well as [Docker](https://www.docker.com/) on your development system.
 
-Each step's starting point is contained in a Git branch by the step number, i.e. for step 1 go to the `step-1` branch.
+Next, you'll need to clone this repository onto your local machine:
 
-1. Environment Setup
-2. ...
+```
+git checkout git@github.com:lfittl/graphql-workshop.git -b step-1
+```
 
+In the `graphql-workshop` directory, run the following:
 
-### Copyright
+```
+npm install
+docker-compose up -d
+```
 
-Licensed under the MIT license.<br />
-Copyright (c) 2016, Lukas Fittl
+This will install a first set of Node modules, as well as start the PostgreSQL instance in Docker.
+
+You can verify with `docker ps -a` that the instance is running, the output should look like this:
+
+```
+```
+
+Now you should be able to run `npm start` without errors.
+
+To confirm everything is working, go into your web browser and open http://localhost:5000/ - you should see a Hello World message like this there:
+
+## Running into issues?
+
+Please reach out to me by email (lukas@fittl.com) or in the Strange Loop Slack (@lukasfittl).

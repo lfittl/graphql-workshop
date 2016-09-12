@@ -1,0 +1,9 @@
+body {
+  font-family: sans-serif;
+}
+
+#root {
+  width: 60%;
+  margin: 20% auto;
+  text-align: center;
+}
