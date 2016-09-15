@@ -9,6 +9,11 @@ export const QUERY_SONG = gql`
         id
         resolution
         bars
+        instruments {
+          id
+          instrumentType
+          data
+        }
       }
     }
   }

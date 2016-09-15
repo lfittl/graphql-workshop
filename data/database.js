@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
-import {loadOne, loadMany, loaderFirstPass} from './database_helpers';
+import {loadOne, loadMany, loaderFirstPass, createOne, updateOne, deleteOne} from './database_helpers';
 
 import Instrument from './models/Instrument';
 import Sequencer from './models/Sequencer';
@@ -26,5 +26,9 @@ let instrumentsLoader = loadMany(db, Instrument);
 
 module.exports = {
   getSong: (id, info) => loadOne(db, Song, id, info),
+  getSequencer: (id, info) => loadOne(db, Sequencer, id, info),
   getSequencersForSong: (obj, info) => sequencersLoader.load(loaderFirstPass(Sequencer, obj, info)),
+  getInstrumentsForSequencer: (obj, info) => instrumentsLoader.load(loaderFirstPass(Instrument, obj, info)),
+  createSequencer: (attrs, info) => createOne(db, Sequencer, attrs, info),
+  deleteSequencer: (id) => deleteOne(db, Sequencer, id),
 };
