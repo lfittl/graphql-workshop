@@ -4,21 +4,35 @@ import { graphql, withApollo } from 'react-apollo';
 
 import { QUERY_SONG } from '../../api/queries';
 import { MUTATION_CREATE_SEQUENCER } from '../../api/mutations';
-import { SUBSCRIPTION_SEQUENCER_ADDED, SUBSCRIPTION_INSTRUMENT_ADDED } from '../../api/subscriptions';
+import { SUBSCRIPTION_SONG_UPDATED, SUBSCRIPTION_SEQUENCER_ADDED, SUBSCRIPTION_INSTRUMENT_ADDED } from '../../api/subscriptions';
 import { withMutations } from '../../util/mutations';
 import { addSequencerToSong } from '../../reducers';
 import Sequencer from '../Sequencer';
+import Player from '../Player';
 
 class Song extends React.Component {
   constructor(props) {
     super(props);
 
+    this.subscriptionObserverSongUpdated = null;
     this.subscriptionObserverSequencerAdded = null;
     this.subscriptionSongId = null;
   }
 
   subscribe(songId, updateQuery) {
     this.subscriptionSongId = songId;
+
+    this.subscriptionObserverSongUpdated = this.props.client.subscribe({
+      query: SUBSCRIPTION_SONG_UPDATED,
+      variables: { songId },
+    }).subscribe({
+      next(data) {
+        updateQuery((previousResult) => {
+          return update(previousResult, { song: { $set: data.songUpdated } });
+        });
+      },
+      error(err) { err.forEach(e => console.error(e)) },
+    });
 
     this.subscriptionObserverSequencerAdded = this.props.client.subscribe({
       query: SUBSCRIPTION_SEQUENCER_ADDED,
@@ -34,6 +48,9 @@ class Song extends React.Component {
   }
 
   unsubscribe() {
+    if (this.subscriptionObserverSongUpdated) {
+      this.subscriptionObserverSongUpdated.unsubscribe();
+    }
     if (this.subscriptionObserverSequencerAdded) {
       this.subscriptionObserverSequencerAdded.unsubscribe();
     }
@@ -61,6 +78,10 @@ class Song extends React.Component {
 
     return (
       <div className="container-fluid">
+        <div className="col-md-6">
+          <Player song={this.props.song} />
+        </div>
+
         <div className="col-md-6">
           {this.props.song.sequencers.length == 0 && <h3>No sequencers yet</h3>}
           {this.props.song.sequencers.map(sequencer =>

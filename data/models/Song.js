@@ -8,6 +8,10 @@ class Song {
     updatedAt: 'updated_at',
   };
 
+  static subscriptionTriggers = {
+    UPDATE: 'songUpdated',
+  };
+
   constructor(options) {
     this.id = options.song_id;
     this.songId = options.song_id;

@@ -12,6 +12,10 @@ class Instrument {
     updatedAt: 'updated_at',
   };
 
+  static subscriptionTriggers = {
+    INSERT: 'instrumentAdded',
+  };
+
   constructor(options) {
     this.id = options.instrument_id;
     this.instrumentId = options.instrument_id;

@@ -145,9 +145,17 @@ const mutationType = new GraphQLObjectType({
 const subscriptionType = new GraphQLObjectType({
   name: 'Subscription',
   fields: {
+    songUpdated: {
+      args: { songId: { type: GraphQLString } },
+      type: songType,
+    },
     sequencerAdded: {
       args: { songId: { type: GraphQLString } },
       type: sequencerType,
+    },
+    instrumentAdded: {
+      args: { sequencerId: { type: GraphQLString } },
+      type: instrumentType,
     },
   },
 });

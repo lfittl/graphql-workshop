@@ -2,6 +2,7 @@ import React from 'react';
 import { map } from 'lodash';
 
 import { MUTATION_CREATE_INSTRUMENT, MUTATION_DELETE_SEQUENCER } from '../../api/mutations';
+import { SUBSCRIPTION_INSTRUMENT_ADDED } from '../../api/subscriptions';
 import Instrument from '../Instrument';
 import { addInstrumentToSong, deleteSequencerFromSong } from '../../reducers';
 import { withMutations } from '../../util/mutations';
@@ -9,6 +10,42 @@ import { withMutations } from '../../util/mutations';
 class Sequencer extends React.Component {
   constructor(props) {
     super(props);
+
+    this.subscriptionObserverInstrumentAdded = null;
+    this.subscriptionInstrumentId = null;
+  }
+
+  subscribe(sequencerId, updateQuery) {
+    this.subscriptionSequencerId = sequencerId;
+
+    this.subscriptionObserverInstrumentAdded = this.props.client.subscribe({
+      query: SUBSCRIPTION_INSTRUMENT_ADDED,
+      variables: { sequencerId },
+    }).subscribe({
+      next(data) { updateQuery(prev => addInstrumentToSong(prev, data.instrumentAdded)) },
+      error(err) { err.forEach(e => console.error(e)) },
+    });
+  }
+
+  unsubscribe() {
+    if (this.subscriptionObserverInstrumentAdded) {
+      this.subscriptionObserverInstrumentAdded.unsubscribe();
+    }
+  }
+
+  componentDidMount() {
+    this.subscribe(this.props.sequencer.id, this.props.updateQuery);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.subscriptionSequencerId !== nextProps.sequencer.id) {
+      this.unsubscribe();
+      this.subscribe(nextProps.sequencer.id, nextProps.updateQuery);
+    }
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   render() {

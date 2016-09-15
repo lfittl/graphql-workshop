@@ -1,5 +1,7 @@
 import express from 'express';
 import graphQLHTTP from 'express-graphql';
+import webpack from 'webpack';
+import WebpackDevServer from 'webpack-dev-server';
 import {Schema} from '../data/schema';
 import {pubsub} from '../data/database';
 import path from 'path';
@@ -27,9 +29,19 @@ const subscriptionManager = new SubscriptionManager({
   schema: Schema,
   pubsub,
   setupFunctions: {
+    songUpdated: (options, args) => ({
+      songUpdated: result => {
+        return result.id === args.songId;
+      },
+    }),
     sequencerAdded: (options, args) => ({
       sequencerAdded: result => {
         return result.sequencerAdded.songId === args.songId;
+      },
+    }),
+    instrumentAdded: (options, args) => ({
+      instrumentAdded: result => {
+        return result.instrumentAdded.sequencerId === args.sequencerId;
       },
     }),
   },
