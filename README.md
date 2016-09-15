@@ -6,7 +6,7 @@ This repository contains the workshop on GraphQL and PostgreSQL, first given at 
 
 Each step's starting point is contained in a Git branch by the step number, i.e. for step 1 go to the `step-1` branch.
 
-1. Environment Setup
+1. [Step 1 - Environment Setup](https://github.com/lfittl/graphql-workshop/blob/step-1/README.md)
 2. ...
 
 
