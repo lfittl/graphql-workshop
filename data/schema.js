@@ -16,6 +16,9 @@ import {
   getSong,
   getSequencersForSong,
   getInstrumentsForSequencer,
+  createInstrument,
+  updateInstrument,
+  deleteInstrument,
   createSequencer,
   deleteSequencer,
 } from './database';
@@ -31,6 +34,13 @@ var instrumentType = new GraphQLObjectType({
     createdAt: { type: GraphQLInt, description: 'The unix timestamp of when the sequencer was created' },
     updatedAt: { type: GraphQLInt, description: 'The unix timestamp of when the sequencer was last updated' },
   },
+});
+
+var deletedInstrumentType = new GraphQLObjectType({
+   name: 'DeletedInstrument',
+   fields: {
+     id: { type: GraphQLString, description: 'ID of the instrument' },
+   },
 });
 
 var sequencerType = new GraphQLObjectType({
@@ -94,6 +104,27 @@ var queryType = new GraphQLObjectType({
 const mutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
+    createInstrument: {
+      args: { sequencerId: { type: GraphQLString }, instrumentType: { type: GraphQLString }, data: { type: GraphQLJSON } },
+      type: instrumentType,
+      resolve(obj, { sequencerId, instrumentType, data }, context, info) {
+        return createInstrument({ sequencerId, instrumentType, data }, info);
+      }
+    },
+    updateInstrument: {
+      args: { instrumentId: { type: GraphQLString }, data: { type: GraphQLJSON } },
+      type: instrumentType,
+      resolve(obj, { instrumentId, data }, context, info) {
+        return updateInstrument(instrumentId, data, info);
+      }
+    },
+    deleteInstrument: {
+      args: { instrumentId: { type: GraphQLString } },
+      type: deletedInstrumentType,
+      resolve(obj, { instrumentId }, context, info) {
+        return deleteInstrument(instrumentId);
+      }
+    },
     createSequencer: {
       args: { songId: { type: GraphQLString }, resolution: { type: GraphQLInt }, bars: { type: GraphQLInt } },
       type: sequencerType,
@@ -111,7 +142,18 @@ const mutationType = new GraphQLObjectType({
   },
 });
 
+const subscriptionType = new GraphQLObjectType({
+  name: 'Subscription',
+  fields: {
+    sequencerAdded: {
+      args: { songId: { type: GraphQLString } },
+      type: sequencerType,
+    },
+  },
+});
+
 export var Schema = new GraphQLSchema({
   query: queryType,
   mutation: mutationType,
+  subscription: subscriptionType,
 });

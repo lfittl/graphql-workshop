@@ -4,11 +4,58 @@ import { graphql, withApollo } from 'react-apollo';
 
 import { QUERY_SONG } from '../../api/queries';
 import { MUTATION_CREATE_SEQUENCER } from '../../api/mutations';
+import { SUBSCRIPTION_SEQUENCER_ADDED, SUBSCRIPTION_INSTRUMENT_ADDED } from '../../api/subscriptions';
 import { withMutations } from '../../util/mutations';
 import { addSequencerToSong } from '../../reducers';
 import Sequencer from '../Sequencer';
 
 class Song extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.subscriptionObserverSequencerAdded = null;
+    this.subscriptionSongId = null;
+  }
+
+  subscribe(songId, updateQuery) {
+    this.subscriptionSongId = songId;
+
+    this.subscriptionObserverSequencerAdded = this.props.client.subscribe({
+      query: SUBSCRIPTION_SEQUENCER_ADDED,
+      variables: { songId },
+    }).subscribe({
+      next(data) {
+        updateQuery((prev) => {
+          return addSequencerToSong(prev, data.sequencerAdded);
+        });
+      },
+      error(err) { err.forEach(e => console.error(e)) },
+    });
+  }
+
+  unsubscribe() {
+    if (this.subscriptionObserverSequencerAdded) {
+      this.subscriptionObserverSequencerAdded.unsubscribe();
+    }
+  }
+
+  componentDidMount() {
+    if (this.props.loading === false) {
+      this.subscribe(this.props.song.id, this.props.updateQuery);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.subscriptionSongId !== nextProps.song.id) {
+      this.unsubscribe();
+      this.subscribe(nextProps.song.id, nextProps.updateQuery);
+    }
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
   render() {
     if (this.props.loading) return <div>Loading...</div>;
 

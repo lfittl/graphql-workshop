@@ -11,6 +11,10 @@ class Sequencer {
     updatedAt: 'updated_at',
   };
 
+  static subscriptionTriggers = {
+    INSERT: 'sequencerAdded',
+  };
+
   constructor(options) {
     this.id = options.sequencer_id;
     this.sequencerId = options.sequencer_id;
