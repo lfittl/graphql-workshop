@@ -1,29 +1,30 @@
 import Promise from 'bluebird';
+import {loadOne, loadMany, loaderFirstPass} from './database_helpers';
 
-var pgp = require('pg-promise')({ promiseLib: Promise });
+import Instrument from './models/Instrument';
+import Sequencer from './models/Sequencer';
+import Song from './models/Song';
+
+var options = { promiseLib: Promise };
+
+var pgp = require('pg-promise')(options);
+var monitor = require('pg-monitor');
+
+monitor.attach(options);
 
 var dbconfig = {
-  host: process.env.PG_HOST,
-  port: process.env.PG_PORT,
-  database: 'workshop',
-  user: 'workshop',
+    host: process.env.PG_HOST,
+    port: process.env.PG_PORT,
+    database: 'workshop',
+    user: 'workshop',
 };
 
 var db = pgp(dbconfig);
 
-function getPostgresVersion() {
-  return new Promise(function(resolve, reject) {
-    db.any("SELECT pg_sleep(1), version() AS version")
-    .then(function (data) {
-      resolve(data[0]['version']);
-    })
-    .catch(function (error) {
-      console.error(error);
-      reject(error);
-    });
-  });
-}
+let sequencersLoader = loadMany(db, Sequencer);
+let instrumentsLoader = loadMany(db, Instrument);
 
 module.exports = {
-  getPostgresVersion: getPostgresVersion,
+  getSong: (id, info) => loadOne(db, Song, id, info),
+  getSequencersForSong: (obj, info) => sequencersLoader.load(loaderFirstPass(Sequencer, obj, info)),
 };

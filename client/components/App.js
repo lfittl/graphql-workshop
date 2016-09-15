@@ -2,14 +2,14 @@ import React from 'react';
 import { ApolloProvider } from 'react-apollo';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 
-import HelloWorldWithData from './HelloWorldWithData';
+import Song from './Song';
 
 class App extends React.Component {
   constructor(...args) {
     super(...args);
 
     this.client = new ApolloClient({
-      networkInterface: createNetworkInterface('http://localhost:5000/graphql'),
+      networkInterface: createNetworkInterface('/graphql'),
       dataIdFromObject: r => r.id,
     });
   }
@@ -17,7 +17,7 @@ class App extends React.Component {
   render() {
     return (
       <ApolloProvider client={this.client}>
-        <HelloWorldWithData />
+        <Song songId="00c60941-3c2f-4935-b2f3-589b4594d302" />
       </ApolloProvider>
     );
   }
