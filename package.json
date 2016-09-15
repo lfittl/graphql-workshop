@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm-run-all --parallel start_webpack_dev start_server",
     "start_webpack_dev": "webpack-dev-server --inline --port 3000 --config webpack.config.dev.js --content-base public/",
-    "start_server": "DOCKER_HOST=`docker-machine ip` babel-node server/index.js",
+    "start_server": "PG_HOST=`docker-machine ip 2> /dev/null || echo '127.0.0.1'` PG_PORT=5600 babel-node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {},

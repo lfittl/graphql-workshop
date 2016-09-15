@@ -3,8 +3,8 @@ import Promise from 'bluebird';
 var pgp = require('pg-promise')({ promiseLib: Promise });
 
 var dbconfig = {
-  host: process.env.DOCKER_HOST,
-  port: 5432,
+  host: process.env.PG_HOST,
+  port: process.env.PG_PORT,
   database: 'workshop',
   user: 'workshop',
 };
